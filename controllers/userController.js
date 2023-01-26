@@ -52,7 +52,52 @@ const userController = {
             res.json(dbUserData);
         })
         .catch((err) => res.status(500).json(err))
-    } 
+    },
+    deleteUser({params}, res) {
+        User.findOneAndDelete({_id: params.id})
+        .then ((dbUserData) => {
+            if (!dbUserData) {
+                res.status(404).json({ message: "Mo User found with this id"});
+                return;
+            }
+            res.json(dbUserData);
+        })
+        .catch((err) => res.status(500).json(err))
+    },
+
+    // Friend portion
+
+    addFriend({ params }, res) {
+        User.findOneAndUpdate(
+          { _id: params.id },
+          { $addToSet: {friends: params.friendsId } },
+          { new: true }
+        )
+          .then(dbUserData => {
+            if (!dbUserData) {
+              res.status(404).json({ message: 'No User found with this id!' });
+              return;
+            }
+            res.json(dbUserData);
+          })
+          .catch(err => res.json(err));
+      },
+    
+      deleteFriend({ params }, res) {
+        User.findOneAndUpdate(
+          { _id: params.id },
+          { $pull: {friends: params.friendsId } },
+          { new: true }
+        )
+          .then(dbUserData => {
+            if (!dbUserData) {
+              res.status(404).json({ message: 'No User found with this id!' });
+              return;
+            }
+            res.json(dbUserData);
+          })
+          .catch(err => res.json(err));
+      },
 
 }
 
