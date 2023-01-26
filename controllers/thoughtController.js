@@ -11,19 +11,14 @@ const thoughtController = {
             res.status(500).json(err)
         })
     },
-    getUserById({ params }, res) {
-        User.findOne({ _id: params.id })
-        // .populate({
-        //     path: "thoughts",
-        //     select: "-__v"
-        // })
-        .select("-__v")
-        .then ((dbUserData) => {
-            if (!dbUserData) {
+    getThoughtById({ params }, res) {
+        Thought.findOne({ _id: params.id })
+        .then ((dbThoughtData) => {
+            if (!dbThoughtData) {
                 res.status(404).json({ message: "Mo User found with this id"});
                 return;
             }
-            res.json(dbUserData);
+            res.json(dbThoughtData);
         })
     },
     createThought({body}, res) {
@@ -33,7 +28,31 @@ const thoughtController = {
             console.log(err)
             res.status(500).json(err)
         })
-    }
+    },
+    updateThought({params, body}, res) {
+    Thought.findOneAndUpdate({_id: params.id}, body, {
+            new: true
+        })
+        .then ((dbThoughtData) => {
+            if (!dbThoughtData) {
+                res.status(404).json({ message: "Mo User found with this id"});
+                return;
+            }
+            res.json(dbThoughtData);
+        })
+        .catch((err) => res.status(500).json(err))
+    },
+    deleteThought({params}, res) {
+        Thought.findOneAndDelete({_id: params.id})
+        .then ((dbThoughtData) => {
+            if (!dbThoughtData) {
+                res.status(404).json({ message: "Mo User found with this id"});
+                return;
+            }
+            res.json(dbThoughtData);
+        })
+        .catch((err) => res.status(500).json(err))
+    },
 }
 
 module.exports = thoughtController;
