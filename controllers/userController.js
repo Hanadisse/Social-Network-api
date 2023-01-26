@@ -4,7 +4,7 @@ const userController = {
     getAllUsers(req, res) {
         User.find({})
         // .populate({
-        //     // path: "thoughts",
+        //     path: "thoughts",
         //     select: "-__v"
         // })
         .select("-__v")
@@ -15,6 +15,21 @@ const userController = {
             res.status(500).json(err)
         })
     },
+    getUserById({ params }, res) {
+        User.findOne({ _id: params.id })
+        // .populate({
+        //     path: "thoughts",
+        //     select: "-__v"
+        // })
+        .select("-__v")
+        .then ((dbUserData) => {
+            if (!dbUserData) {
+                res.status(404).json({ message: "Mo User found with this id"});
+                return;
+            }
+            res.json(dbUserData);
+        })
+    },
     createUser({body}, res) {
         User.create(body)
         .then((dbUserData) => res.json(dbUserData))
@@ -23,22 +38,22 @@ const userController = {
             res.status(500).json(err)
         })
     },
+    updateUser({params, body}, res) {
+        User.findOneAndUpdate({_id: params.id}, body, {
+            new: true,
+            runValidators: true,
 
-    getUserById({ params }, res) {
-        User.findOne({ _id: params.id })
-        .populate({
-            path: "thoughts",
-            select: "-__v"
         })
-        .select("-__v")
-        .then ((dbUserData)) => {
+        .then ((dbUserData) => {
             if (!dbUserData) {
                 res.status(404).json({ message: "Mo User found with this id"});
                 return;
             }
             res.json(dbUserData);
         })
-    }
+        .catch((err) => res.status(500).json(err))
+    } 
+
 }
 
 module.exports = userController;
